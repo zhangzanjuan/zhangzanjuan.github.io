@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数据可视化</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <script src="js/jquery.js"></script>
+    <script src="js/flexible.js"></script>
+    <script src="js/vue.js"></script>
+  </head>
+
+  <body>
+    <!-- 头部的盒子 -->
+    <header>
+      <h1>中继智能控制中心</h1>
+      <div class="showTime"></div>
+      <script>
+        var t = null;
+        t = setTimeout(time, 1000); //開始运行
+        function time() {
+          clearTimeout(t); //清除定时器
+          dt = new Date();
+          var y = dt.getFullYear();
+          var mt = dt.getMonth() + 1;
+          var d = dt.getDate();
+          var weekday = [
+            "周日",
+            "周一",
+            "周二",
+            "周三",
+            "周四",
+            "周五",
+            "周六",
+          ];
+          var day = dt.getDay();
+          var h = dt.getHours(); //获取时
+          var m = dt.getMinutes(); //获取分
+          var s = dt.getSeconds(); //获取秒
+          if (h < 10) {
+            h = "0" + h;
+          }
+          if (m < 10) {
+            m = "0" + m;
+          }
+          if (s < 10) {
+            s = "0" + s;
+          }
+          document.querySelector(".showTime").innerHTML =
+            y +
+            "/" +
+            mt +
+            "/" +
+            d +
+            " " +
+            weekday[day] +
+            " " +
+            h +
+            ":" +
+            m +
+            ":" +
+            s;
+          t = setTimeout(time, 1000); //设定定时器，循环运行
+        }
+      </script>
+      <div class="logout">
+        <a href="../../demo1/demo.html">退出登录</a>
+      </div>
+    </header>
+    <!-- 页面主体部分 -->
+    <section>
+      <div class="mainbox">
+        <div class="column">
+          <div class="panel1">
+            <div class="title">
+              <span class="icon">▎</span>
+              <span>北京-武汉</span>
+            </div>
+            <div class="chart1">
+              <table>
+                <thead>
+                  <tr>
+                    <th>站点</th>
+                    <th>通断</th>
+                    <th>温度</th>
+                    <th>前后功率</th>
+                    <th>后向功率</th>
+                  </tr>
+                </thead>
+                <!-- <tbody id="beiwu" class="tableData"> -->
+                  <div id="box">
+                    <ul
+                      id="con1"
+                      ref="con1"
+                      :class="{anim:animate==true}"
+                      @mouseenter="Stop()"
+                      @mouseleave="Up()"
+                    >
+                      <li v-for="item in items">{{item.city_name}}</li>
+                    </ul>
+                  </div>
+                <!-- </tbody> -->
+                <script>
+                  new Vue({
+                    el: "#box",
+                    data() {
+                      return {
+                        animate: false,
+                        items: [
+                          {
+                            city_name: "静芯园",
+                          },
+                          {
+                            city_name: "望京",
+                          },
+                          {
+                            city_name: "武清",
+                          },
+                          {
+                            city_name: "樊羊路",
+                          },
+                          {
+                            city_name: "杜家坎",
+                          },
+                          {
+                            city_name: "涿州",
+                          },
+                          {
+                            city_name: "保定",
+                          },
+                          {
+                            city_name: "定州",
+                          },
+                          {
+                            city_name: "邢台北",
+                          },
+                        ],
+                        timer: "",
+                      };
+                    },
+                    created() {
+                      this.timer = setInterval(this.scroll, 1000);
+                    },
+                    methods: {
+                      scroll() {
+                        this.animate = true; // 因为在消息向上滚动的时候需要添加css3过渡动画，所以这里需要设置true
+                        setTimeout(() => {
+                          //  这里直接使用了es6的箭头函数，省去了处理this指向偏移问题，代码也比之前简化了很多
+                          this.items.push(this.items[0]); // 将数组的第一个元素添加到数组的
+                          this.items.shift(); //删除数组的第一个元素
+                          this.animate = false; // margin-top 为0 的时候取消过渡动画，实现无缝滚动
+                        }, 500);
+                      },
+                      //鼠标移上去停止
+                      Stop() {
+                        clearInterval(this.timer);
+                      },
+                      Up() {
+                        this.timer = setInterval(this.scroll, 1000);
+                      },
+                    },
+                  });
+                </script>
+                <style>
+                  #beiwu {
+                    width: 300px;
+                    height: 60px;
+                    overflow: hidden;
+                    padding-left: 30px;
+                    border: 1px solid black;
+                  }
+
+                  ul {
+                    margin: 0;
+                  }
+
+                  /* .anim {
+                    transition: all 0.5s ease;
+                    margin-top: -30px;
+                  } */
+                   li {
+                    list-style: none;
+                    line-height: 30px;
+                    height: 30px;
+                    color: #fff;
+                    font-weight: bold;
+                    font-size: 0.1875rem;
+                  }
+                </style>
+              </table>
+            </div>
+          </div>
+          <div class="panel2">
+            <div class="title">
+              <span class="icon">▎</span>
+              <span>通断情况</span>
+            </div>
+            <div class="chart2" id="bingData1"></div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="panel1">
+            <div class="title">
+              <span class="icon">▎</span>
+              <span>地图</span>
+            </div>
+            <div class="chart1">
+              <div class="map"></div>
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="panel1">
+            <div class="title">
+              <span class="icon">▎</span>
+              <span>武汉-广州</span>
+            </div>
+            <div class="chart1">
+              <table>
+                <thead>
+                  <tr>
+                    <th>站点</th>
+                    <th>通断</th>
+                    <th>温度</th>
+                    <th>前后功率</th>
+                    <th>后向功率</th>
+                  </tr>
+                </thead>
+                <tbody id="wuguang" class="tableData"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel2">
+            <div class="title">
+              <span class="icon">▎</span>
+              <span>通断情况</span>
+            </div>
+            <div class="chart2" id="bingData2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/bingData1.js"></script>
+    <script src="js/bingData2.js"></script>
+  </body>
+</html>
